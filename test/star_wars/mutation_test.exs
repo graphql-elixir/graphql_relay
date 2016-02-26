@@ -22,7 +22,7 @@ defmodule GraphQL.StarWars.MutationTest do
       }
     """
     params = %{
-      input: %{
+      "input" => %{
         clientMutationId: "abcde",
         factionId: "1",
         shipName: "B-Wing",
