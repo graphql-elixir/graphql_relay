@@ -11,7 +11,6 @@ defmodule GraphQL.Relay.Mutation do
   """
   alias GraphQL.Type.NonNull
   alias GraphQL.Type.ObjectType
-  alias GraphQL.Type.Input
 
   def new(config) do
     name = config[:name]
@@ -32,7 +31,7 @@ defmodule GraphQL.Relay.Mutation do
       fields: augmented_output_fields
     }
 
-    input_type = %Input{
+    input_type = %ObjectType{
       name: "#{name}Input",
       fields: augmented_input_fields
     }
