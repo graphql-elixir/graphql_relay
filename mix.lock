@@ -1,1 +1,1 @@
-%{"graphql": {:git, "https://github.com/seanabrahams/graphql-elixir.git", "a33dfa1c4f6c3f7808df1449206508f655e4ac5d", [branch: "input_types-relay"]}}
+%{"graphql": {:hex, :graphql, "0.1.2"}}
