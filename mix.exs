@@ -26,7 +26,7 @@ defmodule GraphQL.Relay.Mixfile do
 
   defp deps do
     [
-      {:graphql, git: "https://github.com/seanabrahams/graphql-elixir.git", branch: "input_types-relay"}
+      {:graphql, "~> 0.1.2"}
     ]
   end
 
