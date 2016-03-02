@@ -33,7 +33,7 @@ defmodule GraphQL.Relay.Mixfile do
   defp deps do
     [
       {:graphql, git: "https://github.com/joshprice/graphql-elixir.git"},
-      {:poison, "~> 2.0"}
+      {:poison, "~> 1.5 or ~> 2.0"}
     ]
   end
 
