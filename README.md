@@ -36,7 +36,7 @@ We need to set two configuration values which you can do in the `config/config.e
 
 ```elixir
 config :graphql_relay,
-  schema_module: GraphQL.Schema.Root,
+  schema_module: GraphQL.Schema.Root, # Module that includes a `schema` function that returns your GraphQL schema
   schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
 ```
 
