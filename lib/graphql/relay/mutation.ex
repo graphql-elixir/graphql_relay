@@ -46,7 +46,7 @@ defmodule GraphQL.Relay.Mutation do
       },
       resolve: fn(_data, args, info) ->
         Map.merge(mutate_and_get_payload.(args[:input], info), %{
-          clientMutationId: args[:input][:clientMutationId]
+          clientMutationId: args[:input][:clientMutationId] || args[:input]["clientMutationId"]
         })
       end
     }
