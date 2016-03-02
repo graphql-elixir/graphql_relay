@@ -37,7 +37,7 @@ We need to set two configuration values which you can do in the `config/config.e
 ```elixir
 config :graphql_relay,
   schema_module: GraphQL.Schema.Root, # Module that includes a `schema` function that returns your GraphQL schema
-  schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
+  schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql" # Will create a `schema.json` file in this directory
 ```
 
 With this configuration set you can now run the `GraphQL.Relay.generate_schema_json` function from your project's root directory: `mix run -e GraphQL.Relay.generate_schema_json`
