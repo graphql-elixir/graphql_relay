@@ -28,21 +28,21 @@ defmodule GraphQL.Relay.ConnectionTest do
             type: %GraphQL.Type.String{}
           },
           friends: %{
-            type: TestSchema.friend_connection,
+            type: TestSchema.friend_connection[:connection_type],
             args: Connection.args,
             resolve: fn(user, args, _ctx) ->
               Connection.List.resolve(user[:friends], args)
             end
           },
           friendsForward: %{
-            type: TestSchema.user_connection,
+            type: TestSchema.user_connection[:connection_type],
             args: Connection.forward_args,
             resolve: fn(user, args, _ctx) ->
               Connection.List.resolve(user[:friends], args)
             end
           },
           friendsBackward: %{
-            type: TestSchema.user_connection,
+            type: TestSchema.user_connection[:connection_type],
             args: Connection.backward_args,
             resolve: fn(user, args, _ctx) ->
               Connection.List.resolve(user[:friends], args)

@@ -55,7 +55,7 @@ defmodule GraphQL.Relay.Connection do
       })
     }
 
-    connection_type
+    %{edge_type: edge_type, connection_type: connection_type}
   end
 
   def args(additional_args \\ %{}) do

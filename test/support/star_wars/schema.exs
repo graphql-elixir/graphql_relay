@@ -70,7 +70,7 @@ defmodule StarWars.Schema do
           description: "The name of the faction.",
         },
         ships: %{
-          type: ship_connection,
+          type: ship_connection[:connection_type],
           description: "The ships used by the faction.",
           args: Connection.args,
           resolve: fn(faction, args, _ctx) ->
