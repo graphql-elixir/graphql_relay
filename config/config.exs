@@ -28,3 +28,8 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+# Example
+# config :graphql_relay,
+#   schema_module: GraphQL.Schema.Root,
+#   schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"

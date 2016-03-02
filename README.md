@@ -23,11 +23,23 @@ It's important that you understand GraphQL first and then Relay second. Relay is
   1. Add graphql_relay to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:graphql_relay, "~> 0.0.1"}]
+          [{:graphql_relay, "~> 0.0.4"}]
         end
 
-  2. Ensure graphql_relay is started before your application:
+## Configuration
 
-        def application do
-          [applications: [:graphql_relay]]
-        end
+Relay's Babel Plugin (<a href="https://facebook.github.io/relay/docs/guides-babel-plugin.html">Relay Docs</a>, <a href="https://www.npmjs.com/package/babel-relay-plugin">npm</a>) and babel-relay-plugin-loader (<a href="https://www.npmjs.com/package/babel-relay-plugin-loader">npm</a>, <a href="https://github.com/BerndWessels/babel-relay-plugin-loader">GitHub</a>) rely on a `schema.json` file existing that contains the result of running the full GraphQL introspection query against your GraphQL endpoint. Babel needs this file for transpiling GraphQL queries for use with Relay.
+
+In other words, Relay requires a `schema.json` file which is generated server-side, so we need a way of creating and updating this file.
+
+We need to set two configuration values which you can do in the `config/config.exs` for the project you're using this library in.
+
+```elixir
+config :graphql_relay,
+  schema_module: GraphQL.Schema.Root,
+  schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
+```
+
+With this configuration set you can now run the `GraphQL.Relay.generate_schema_json` function from your project's root directory: `mix run GraphQL.Relay.generate_schema_json`
+
+If you're using this library in a Phoenix project you should be able to set it up so that it runs locally after each modification to a GraphQL related schema file. If you know how this can be done, please let me know <a href="https://github.com/seanabrahams/graphql-relay-elixir/issues/8">here</a>.
