@@ -40,6 +40,6 @@ config :graphql_relay,
   schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql" # Will create a `schema.json` file in this directory
 ```
 
-With this configuration set you can now run the `GraphQL.Relay.generate_schema_json` function from your project's root directory: `mix run -e GraphQL.Relay.generate_schema_json`
+With this configuration set you can now run the `GraphQL.Relay.generate_schema_json!` function from your project's root directory: `mix run -e GraphQL.Relay.generate_schema_json!`
 
 If you're using this library in a Phoenix project you should be able to set it up so that it runs locally after each modification to a GraphQL related schema file. If you know how this can be done, please let me know <a href="https://github.com/seanabrahams/graphql-relay-elixir/issues/8">here</a>.
