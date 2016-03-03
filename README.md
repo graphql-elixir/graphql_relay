@@ -23,7 +23,7 @@ It's important that you understand GraphQL first and then Relay second. Relay is
   1. Add graphql_relay to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:graphql_relay, "~> 0.0.7"}]
+          [{:graphql_relay, "~> 0.0.8"}]
         end
 
 ## Configuration
@@ -42,4 +42,4 @@ config :graphql_relay,
 
 With this configuration set you can now run the `GraphQL.Relay.generate_schema_json!` function from your project's root directory: `mix run -e GraphQL.Relay.generate_schema_json!`
 
-If you're using this library in a Phoenix project you should be able to set it up so that it runs locally after each modification to a GraphQL related schema file. If you know how this can be done, please let me know <a href="https://github.com/seanabrahams/graphql-relay-elixir/issues/8">here</a>.
+If you're using this library in a Phoenix project you can <a href="https://github.com/graphql-elixir/graphql-relay-elixir/wiki/Setup-Phoenix-app-to-reload-schema.json-file-whenever-GraphQL-schema-files-change">set up your Phoenix dev environment to run this automatically after each modification to a GraphQL related schema file</a>.
