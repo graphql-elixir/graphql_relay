@@ -14,7 +14,7 @@ defmodule GraphQL.Relay do
     end
   end
 
-  def generate_schema_json do
+  def generate_schema_json! do
     Logger.debug "Updating GraphQL schema.json"
 
     data_dir = Application.fetch_env!(:graphql_relay, :schema_json_path)
