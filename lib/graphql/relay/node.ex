@@ -54,7 +54,7 @@ defmodule GraphQL.Relay.Node do
   def from_global_id(global_id) do
     case Base.decode64(global_id) do
       {:ok, decoded} -> String.split(decoded, ":")
-      {:error, _} -> [nil, nil]
+      :error -> [nil, nil]
     end
   end
 
