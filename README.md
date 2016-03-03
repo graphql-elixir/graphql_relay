@@ -23,7 +23,7 @@ It's important that you understand GraphQL first and then Relay second. Relay is
   1. Add graphql_relay to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:graphql_relay, "~> 0.0.8"}]
+          [{:graphql_relay, "~> 0.0.9"}]
         end
 
 ## Configuration

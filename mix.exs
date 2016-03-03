@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.0.8"
+  @version "0.0.9"
   @description "Elixir implementation of Relay for GraphQL"
   @repo_url "https://github.com/seanabrahams/graphql-relay-elixir"
 
@@ -32,7 +32,7 @@ defmodule GraphQL.Relay.Mixfile do
 
   defp deps do
     [
-      {:graphql, git: "https://github.com/joshprice/graphql-elixir.git"},
+      {:graphql, git: "https://github.com/graphql-elixir/graphql-elixir.git"},
       {:poison, "~> 1.5 or ~> 2.0"}
     ]
   end
