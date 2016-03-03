@@ -3,7 +3,7 @@ defmodule GraphQL.Relay.Mixfile do
 
   @version "0.0.9"
   @description "Elixir implementation of Relay for GraphQL"
-  @repo_url "https://github.com/seanabrahams/graphql-relay-elixir"
+  @repo_url "https://github.com/graphql-elixir/graphql-relay-elixir"
 
   def project do
     [app: :graphql_relay,
