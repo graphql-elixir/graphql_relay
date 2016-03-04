@@ -22,7 +22,7 @@ defmodule GraphQL.Relay.Mixfile do
 
   def application do
     [
-      applications: [:logger],
+      applications: [:logger, :ecto],
       env: [
         schema_module: StarWars.Schema, # Module with a .schema function that returns your GraphQL schema
         schema_json_path: "./schema.json"
