@@ -4,7 +4,7 @@ This library contains helper functions that make it easier to setup a Relay comp
 
 You do not need this library to create a Relay compatible GraphQL schema, it just makes it easier. To illustrate this point here's what a Relay compatible schema looks like <a href="https://github.com/seanabrahams/graphql-relay-elixir/blob/master/test/support/star_wars/schema_without_library.exs">when you don't use this library</a> and <a href="https://github.com/seanabrahams/graphql-relay-elixir/blob/master/test/support/star_wars/schema.exs">when you do use it</a>.
 
-This library relies on the <a href="https://github.com/joshprice/graphql-elixir">graphql-elixir</a> library.
+This library relies on the <a href="https://github.com/graphql-elixir/graphql-elixir">graphql-elixir</a> library.
 
 ## Learning GraphQL and Relay
 
