@@ -101,13 +101,4 @@ defmodule GraphQL.Relay.Connection do
       }
     }
   end
-
-  # Undecided if including this... 
-  def resolve(data, args) do
-    case data do
-      data when is_map(data) -> GraphQL.Relay.Connection.Ecto.resolve(data, args)
-      data when is_list(data) -> GraphQL.Relay.Connection.List.resolve(data, args)
-      _ -> :error
-    end
-  end
 end

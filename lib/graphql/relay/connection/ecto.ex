@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Connection.Ecto do
   @moduledoc """
   Interface between Relay Connections and Ecto Queries.
-  
+
   In other words, this module allows you to back a Relay Connection with an
   Ecto query.
   """
@@ -23,18 +23,8 @@ defmodule GraphQL.Relay.Connection.Ecto do
       query = from things in query, where: things.id < ^before
     end
 
-    if first do
-      query = from things in query, order_by: [asc: things.id], limit: ^limit
-    else
-      has_next_page = false
-    end
-
-    if last do
-      query = from things in query, order_by: [desc: things.id], limit: ^limit
-    else
-      has_prev_page = false
-    end
-
+    # Calculate has_next_page/has_prev_page before order_by to avoid group_by
+    # requirement
     has_next_page = case first do
       nil -> false
       _ ->
@@ -51,6 +41,18 @@ defmodule GraphQL.Relay.Connection.Ecto do
         has_prev_records_query = from things in query, limit: ^last_limit
         has_prev_records_query = from things in has_prev_records_query, select: count(things.id)
         repo.one(has_prev_records_query) > last
+    end
+
+    if first do
+      query = from things in query, order_by: [asc: things.id], limit: ^limit
+    else
+      has_next_page = false
+    end
+
+    if last do
+      query = from things in query, order_by: [desc: things.id], limit: ^limit
+    else
+      has_prev_page = false
     end
 
     records = repo.all(query)
