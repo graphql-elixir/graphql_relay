@@ -34,7 +34,7 @@ defmodule GraphQL.Relay.Mixfile do
     [
       {:graphql, git: "https://github.com/graphql-elixir/graphql-elixir.git"},
       {:poison, "~> 1.5 or ~> 2.0"}, # For .generate_schema_json!
-      {:ecto, "~> 1.1.4", only: [:dev, :test]},
+      {:ecto, "~> 1.1.4", optional: true},
       {:sqlite_ecto, "~> 1.0.0", only: [:dev, :test]},
     ]
   end
