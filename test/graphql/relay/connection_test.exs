@@ -23,7 +23,7 @@ defmodule GraphQL.Relay.ConnectionTest do
     def user_type do
       %ObjectType{
         name: "User",
-        fields: quote do %{
+        fields: fn -> %{
           name: %{
             type: %GraphQL.Type.String{}
           },
