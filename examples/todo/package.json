@@ -1,0 +1,33 @@
+{
+  "repository": {
+  },
+  "dependencies": {
+    "brunch": "^2.1.1",
+    "babel-brunch": "^6.0.0",
+    "babel-polyfill": "6.5.0",
+    "babel-preset-react": "6.5.0",
+    "babel-preset-stage-0": "6.5.0",
+    "babel-relay-plugin": "0.7.3",
+    "babel-relay-plugin-loader": "0.7.1",
+    "classnames": "2.2.3",
+    "clean-css-brunch": ">= 1.0 < 1.8",
+    "css-brunch": ">= 1.0 < 1.8",
+    "graphql": "0.4.17",
+    "graphql-relay": "0.3.6",
+    "history": "1.17.0",
+    "javascript-brunch": ">= 1.0 < 1.8",
+    "react": "0.14.7",
+    "react-dom": "0.14.7",
+    "react-relay": "^0.7.0",
+    "react-router": "1.0.3",
+    "react-router-relay": "0.8.0",
+    "todomvc-app-css": "2.0.4",
+    "todomvc-common": "1.0.2",
+    "uglify-js-brunch": ">= 1.0 < 1.8"
+  },
+  "metadata": {
+    "graphql": {
+      "schema": "./priv/repo/graphql/schema.json"
+    }
+  }
+}

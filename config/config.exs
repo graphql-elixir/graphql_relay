@@ -20,6 +20,7 @@ use Mix.Config
 #
 #     config :logger, level: :info
 #
+config :logger, level: :info
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
@@ -33,3 +34,7 @@ use Mix.Config
 # config :graphql_relay,
 #   schema_module: GraphQL.Schema.Root,
 #   schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env}.exs"

@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.0.9"
+  @version "0.0.10"
   @description "Elixir implementation of Relay for GraphQL"
   @repo_url "https://github.com/graphql-elixir/graphql-relay-elixir"
 
@@ -22,7 +22,7 @@ defmodule GraphQL.Relay.Mixfile do
 
   def application do
     [
-      applications: [:logger],
+      applications: [:logger, :ecto],
       env: [
         schema_module: StarWars.Schema, # Module with a .schema function that returns your GraphQL schema
         schema_json_path: "./schema.json"
@@ -33,7 +33,9 @@ defmodule GraphQL.Relay.Mixfile do
   defp deps do
     [
       {:graphql, git: "https://github.com/graphql-elixir/graphql-elixir.git"},
-      {:poison, "~> 1.5 or ~> 2.0"}
+      {:poison, "~> 1.5 or ~> 2.0"}, # For .generate_schema_json!
+      {:ecto, "~> 1.1.4", optional: true},
+      {:sqlite_ecto, "~> 1.0.0", only: [:dev, :test]},
     ]
   end
 

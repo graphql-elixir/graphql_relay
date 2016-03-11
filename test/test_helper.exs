@@ -1,3 +1,15 @@
+Application.ensure_started(:ecto)
+Application.ensure_started(:sqlite_ecto)
+
+###
+# Setup Ecto
+Code.require_file("ecto_repo.exs","./test/support")
+EctoTest.Repo.start_link
+Mix.Task.run "ecto.create", ["--quiet"]
+Mix.Task.run "ecto.migrate", ["--quiet"]
+#
+###
+
 ExUnit.start(exclude: [:skip])
 
 defmodule ExUnit.TestHelpers do
