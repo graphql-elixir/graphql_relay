@@ -1,7 +1,7 @@
 %{"decimal": {:hex, :decimal, "1.1.1"},
   "ecto": {:hex, :ecto, "1.1.4"},
   "esqlite": {:hex, :esqlite, "0.2.2"},
-  "graphql": {:git, "https://github.com/graphql-elixir/graphql-elixir.git", "f1986827e469b7447969100010b549486eb382b1", []},
+  "graphql": {:git, "https://github.com/graphql-elixir/graphql-elixir.git", "5dddfc93cf9910ed0fb4972f2a589c46a357a956", []},
   "pipe": {:hex, :pipe, "0.0.2"},
   "poison": {:hex, :poison, "1.5.2"},
   "poolboy": {:hex, :poolboy, "1.5.1"},
