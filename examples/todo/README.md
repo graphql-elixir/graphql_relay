@@ -1,9 +1,5 @@
 # Elixir + GraphQL + Relay TodoMVC Example App
 
-TODO:
-[ ] Fix response from marking all todos (Read Relay documentation about mutations: http://facebook.github.io/relay/docs/guides-mutations.html#content)
-[ ] Fix completed tasks showing when Active filter is selected (works on page reload)
-
 ```bash
 $ mix deps.get
 $ mix ecto.create && mix ecto.migrate
