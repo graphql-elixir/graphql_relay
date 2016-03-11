@@ -25,6 +25,7 @@ It's important that you understand GraphQL first and then Relay second. Relay is
         def deps do
           [
             {:graphql_relay, "~> 0.0.10"},
+            {:graphql, git: "https://github.com/graphql-elixir/graphql-elixir.git"}, # This requirement will be removed in the near future but we need it for the time being
             {:plug_graphql, git: "https://github.com/seanabrahams/plug_graphql.git", branch: "relay"} # This requirement will be removed in the near future but we need it right now if you're using plug_graphql
           ]
         end
