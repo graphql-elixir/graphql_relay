@@ -9,7 +9,7 @@
   "graphql_relay": {:hex, :graphql_relay, "0.0.11"},
   "phoenix": {:hex, :phoenix, "1.0.4"},
   "phoenix_ecto": {:hex, :phoenix_ecto, "1.2.0"},
-  "phoenix_html": {:hex, :phoenix_html, "2.5.0"},
+  "phoenix_html": {:hex, :phoenix_html, "2.5.1"},
   "phoenix_live_reload": {:hex, :phoenix_live_reload, "1.0.3"},
   "plug": {:hex, :plug, "1.1.2"},
   "plug_graphql": {:git, "https://github.com/seanabrahams/plug_graphql.git", "563c62ba114a94bc5490172b3b160786e912af34", [branch: "relay"]},
