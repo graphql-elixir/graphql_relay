@@ -6,7 +6,7 @@
   "ecto": {:hex, :ecto, "1.1.4"},
   "fs": {:hex, :fs, "0.9.2"},
   "graphql": {:git, "https://github.com/graphql-elixir/graphql-elixir.git", "5dddfc93cf9910ed0fb4972f2a589c46a357a956", []},
-  "graphql_relay": {:git, "https://github.com/graphql-elixir/graphql-relay-elixir.git", "110bb892c6ec7b3a5171fd6c5426e7ea456730a2", [branch: "ecto_connection"]},
+  "graphql_relay": {:hex, :graphql_relay, "0.0.10"},
   "phoenix": {:hex, :phoenix, "1.0.4"},
   "phoenix_ecto": {:hex, :phoenix_ecto, "1.2.0"},
   "phoenix_html": {:hex, :phoenix_html, "2.5.0"},

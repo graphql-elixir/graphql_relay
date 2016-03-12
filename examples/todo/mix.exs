@@ -36,7 +36,7 @@ defmodule Todo.Mixfile do
      {:phoenix_html, "~> 2.1"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"},
-     {:graphql_relay, "~> 0.0.10"},
+     {:graphql_relay, "~> 0.0.11"},
      {:plug_graphql, git: "https://github.com/seanabrahams/plug_graphql.git", branch: "relay"}]
   end
 
