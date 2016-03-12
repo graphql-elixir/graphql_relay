@@ -225,8 +225,8 @@ defmodule Todo.GraphQL.Schema.Todo do
           },
         },
         mutate_and_get_payload: fn(input, _info) ->
-          [_, user_id] = Node.from_global_id(input["viewer"]["id"])
-          todos = Todo.GraphQL.Schema.Todo.delete_completed(user_id)
+          # [_, user_id] = Node.from_global_id(input["viewer"]["id"])
+          todos = Todo.GraphQL.Schema.Todo.delete_completed(1)
           %{
             ids: Enum.map(todos, & &1.id)
           }
