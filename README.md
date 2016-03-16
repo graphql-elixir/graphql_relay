@@ -51,3 +51,5 @@ If you're using this library in a Phoenix project you can <a href="https://githu
 ## Usage
 
 See the <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/test/support/star_wars/schema.exs">Star Wars test schema</a> for a simple example and the <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/examples/todo">TodoMVC example Phoenix application</a> for a full application example that uses Ecto as well.
+
+* <a href="https://github.com/graphql-elixir/graphql-elixir/wiki/How-to-do-authentication-and-authorization-in-a-Phoenix-application-with-GraphQL">How to do authentication and authorization in a Phoenix application with GraphQL</a>
