@@ -2,9 +2,9 @@
 
 This library contains helper functions that make it easier to setup a Relay compatible GraphQL schema.
 
-You do not need this library to create a Relay compatible GraphQL schema, it just makes it easier. To illustrate this point here's what a Relay compatible schema looks like <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/test/support/star_wars/schema_without_library.exs">when you don't use this library</a> and <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/test/support/star_wars/schema.exs">when you do use it</a>.
+You do not need this library to create a Relay compatible GraphQL schema, it just makes it easier. To illustrate this point here's what a Relay compatible schema looks like <a href="https://github.com/graphql-elixir/graphql_relay/blob/master/test/support/star_wars/schema_without_library.exs">when you don't use this library</a> and <a href="https://github.com/graphql-elixir/graphql_relay/blob/master/test/support/star_wars/schema.exs">when you do use it</a>.
 
-This library relies on the <a href="https://github.com/graphql-elixir/graphql-elixir">graphql-elixir</a> library.
+This library relies on Elixir's <a href="https://github.com/graphql-elixir/graphql">graphql</a> library.
 
 ## Learning GraphQL and Relay
 
@@ -24,8 +24,8 @@ It's important that you understand GraphQL first and then Relay second. Relay is
 
         def deps do
           [
-            {:graphql_relay, "~> 0.0.12"},
-            {:graphql, git: "https://github.com/graphql-elixir/graphql-elixir.git"}, # This requirement will be removed in the near future but we need it for the time being
+            {:graphql_relay, "~> 0.0.13"},
+            {:graphql, git: "https://github.com/graphql-elixir/graphql.git"}, # This requirement will be removed in the near future but we need it for the time being
             {:plug_graphql, git: "https://github.com/seanabrahams/plug_graphql.git", branch: "relay"} # This requirement will be removed in the near future but we need it right now if you're using plug_graphql
           ]
         end
@@ -46,10 +46,14 @@ config :graphql_relay,
 
 With this configuration set you can now run the `GraphQL.Relay.generate_schema_json!` function from your project's root directory: `mix run -e GraphQL.Relay.generate_schema_json!`
 
-If you're using this library in a Phoenix project you can <a href="https://github.com/graphql-elixir/graphql-relay-elixir/wiki/Setup-Phoenix-app-to-reload-schema.json-file-whenever-GraphQL-schema-files-change">set up your Phoenix dev environment to run this automatically after each modification to a GraphQL related schema file</a>.
+If you're using this library in a Phoenix project you can <a href="https://github.com/graphql-elixir/graphql_relay/wiki/Setup-Phoenix-app-to-reload-schema.json-file-whenever-GraphQL-schema-files-change">set up your Phoenix dev environment to run this automatically after each modification to a GraphQL related schema file</a>.
 
 ## Usage
 
-See the <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/test/support/star_wars/schema.exs">Star Wars test schema</a> for a simple example and the <a href="https://github.com/graphql-elixir/graphql-relay-elixir/blob/master/examples/todo">TodoMVC example Phoenix application</a> for a full application example that uses Ecto as well.
+See the <a href="https://github.com/graphql-elixir/graphql_relay/blob/master/test/support/star_wars/schema.exs">Star Wars test schema</a> for a simple example and the <a href="https://github.com/graphql-elixir/graphql_relay/blob/master/examples/todo">TodoMVC example Phoenix application</a> for a full application example that uses Ecto as well.
 
-* <a href="https://github.com/graphql-elixir/graphql-elixir/wiki/How-to-do-authentication-and-authorization-in-a-Phoenix-application-with-GraphQL">How to do authentication and authorization in a Phoenix application with GraphQL</a>
+* <a href="https://github.com/graphql-elixir/graphql/wiki/How-to-do-authentication-and-authorization-in-a-Phoenix-application-with-GraphQL">How to do authentication and authorization in a Phoenix application with GraphQL</a>
+
+## Helpful Tools
+
+* <a href="https://github.com/facebook/react-devtools">React [and Relay] Developer Tools</a> for Chrome and Firefox.
