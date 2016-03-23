@@ -24,7 +24,7 @@ It's important that you understand GraphQL first and then Relay second. Relay is
 
         def deps do
           [
-            {:graphql_relay, "~> 0.0.14"},
+            {:graphql_relay, "~> 0.0.15"},
             {:plug_graphql, "~> 0.2"} # Most likely going to need this as well
           ]
         end
