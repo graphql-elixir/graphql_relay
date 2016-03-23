@@ -30,7 +30,7 @@ if Code.ensure_loaded?(Ecto) do
         nil -> false
         _ ->
           first_limit = first + 1
-          has_more_records_query = from things in query, limit: ^first_limit
+          has_more_records_query = remove_select(from things in query, limit: ^first_limit)
           has_more_records_query = from things in has_more_records_query, select: count(things.id)
           repo.one(has_more_records_query) > first
       end
@@ -39,7 +39,7 @@ if Code.ensure_loaded?(Ecto) do
         nil -> false
         _ ->
           last_limit = last + 1
-          has_prev_records_query = from things in query, limit: ^last_limit
+          has_prev_records_query = remove_select(from things in query, limit: ^last_limit)
           has_prev_records_query = from things in has_prev_records_query, select: count(things.id)
           repo.one(has_prev_records_query) > last
       end
@@ -114,8 +114,15 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     def connection_count(repo, query) do
+      query = remove_select(query)
       count_query = from things in query, select: count(things.id)
       repo.one(count_query)
+    end
+
+    # Remove select if it exists so that we avoid `only one select
+    # expression is allowed in query` Ecto exception
+    defp remove_select(query) do
+      %{ query | select: nil }
     end
   end
 end
