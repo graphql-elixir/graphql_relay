@@ -59,6 +59,12 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     Enum.at(letters, 4)
   end
 
+  test "querying for counts does not raise exception if select already exists" do
+    query = letters_query
+      |> select([l], %{id: l.id, letter: l.letter})
+    assert(Connection.Ecto.resolve(query, %{repo: Repo}))
+  end
+
   test "basic slicing: returns all elements without filters" do
     expected = %{
       edges: [
