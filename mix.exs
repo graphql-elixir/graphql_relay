@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.0.15"
+  @version "0.0.16"
   @description "Elixir implementation of Relay for GraphQL"
   @repo_url "https://github.com/graphql-elixir/graphql_relay"
 
