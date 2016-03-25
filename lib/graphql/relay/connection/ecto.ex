@@ -30,7 +30,7 @@ if Code.ensure_loaded?(Ecto) do
         nil -> false
         _ ->
           first_limit = first + 1
-          has_more_records_query = remove_select(from things in query, limit: ^first_limit)
+          has_more_records_query = make_query_countable(from things in query, limit: ^first_limit)
           has_more_records_query = from things in has_more_records_query, select: count(things.id)
           repo.one(has_more_records_query) > first
       end
@@ -39,7 +39,7 @@ if Code.ensure_loaded?(Ecto) do
         nil -> false
         _ ->
           last_limit = last + 1
-          has_prev_records_query = remove_select(from things in query, limit: ^last_limit)
+          has_prev_records_query = make_query_countable(from things in query, limit: ^last_limit)
           has_prev_records_query = from things in has_prev_records_query, select: count(things.id)
           repo.one(has_prev_records_query) > last
       end
@@ -114,15 +114,27 @@ if Code.ensure_loaded?(Ecto) do
     end
 
     def connection_count(repo, query) do
-      query = remove_select(query)
+      query = make_query_countable(query)
       count_query = from things in query, select: count(things.id)
       repo.one(count_query)
+    end
+
+    defp make_query_countable(query) do
+      query
+        |> remove_select
+        |> remove_order
     end
 
     # Remove select if it exists so that we avoid `only one select
     # expression is allowed in query` Ecto exception
     defp remove_select(query) do
-      %{ query | select: nil }
+      query |> Ecto.Query.exclude(:select)
+    end
+
+    # Remove order by if it exists so that we avoid `field X in "order_by"
+    # does not exist in the model source in query`
+    defp remove_order(query) do
+      query |> Ecto.Query.exclude(:order_by)
     end
   end
 end

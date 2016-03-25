@@ -4,6 +4,7 @@ defmodule EctoTest.Repo.Migrations.CreateLetter do
   def change do
     create table(:letters) do
       add :letter, :string
+      add :second_column, :string
       timestamps
     end
   end

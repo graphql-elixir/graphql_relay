@@ -11,6 +11,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
 
     schema "letters" do
       field :letter, :string
+      field :second_column, :string
       timestamps
     end
   end
@@ -62,6 +63,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
   test "querying for counts does not raise exception if select already exists" do
     query = letters_query
       |> select([l], %{id: l.id, letter: l.letter})
+      |> order_by([l], asc: l.second_column)
     assert(Connection.Ecto.resolve(query, %{repo: Repo}))
   end
 
