@@ -34,7 +34,7 @@ defmodule GraphQL.Relay.Mixfile do
     [
       {:graphql, "~> 0.2"},
       {:poison, "~> 1.5 or ~> 2.0"}, # For .generate_schema_json!
-      {:ecto, "~> 1.1.4", optional: true},
+      {:ecto, ">= 1.1.4", optional: true},
       {:sqlite_ecto, "~> 1.0.0", only: [:dev, :test]},
     ]
   end
