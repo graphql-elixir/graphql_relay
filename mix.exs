@@ -1,8 +1,8 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.0.17"
-  @description "Elixir implementation of Relay for GraphQL"
+  @version "0.3.0"
+  @description "Relay helpers for GraphQL Elixir"
   @repo_url "https://github.com/graphql-elixir/graphql_relay"
 
   def project do
@@ -40,8 +40,8 @@ defmodule GraphQL.Relay.Mixfile do
   end
 
   defp package do
-    [maintainers: ["Sean Abrahams"],
-     licenses: ["MIT"],
+    [maintainers: ["Sean Abrahams", "Josh Price"],
+     licenses: ["BSD"],
      links: %{"GitHub" => @repo_url},
      files: ~w(lib mix.exs *.md LICENSE)]
   end
