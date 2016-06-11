@@ -1,8 +1,8 @@
 # Release process
 
-This document simply outlines the release process:
+This document outlines the release process:
 
-1. Ensure you are running on the oldest supported Elixir version (check `.travis.yml`)
+1. Ensure you are running on the oldest supported Elixir version (check `.travis.yml` for what is supported)
 
 2. Ensure `CHANGELOG.md` is updated and add current date
 

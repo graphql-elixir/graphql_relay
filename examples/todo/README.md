@@ -8,7 +8,7 @@ $ npm install
 $ mix phoenix.server
 ```
 
-Built with <a href="https://github.com/facebook/relay/tree/master/examples/todo">Facebook's Relay TodoMVC example</a> as a base.
+Built with [Facebook's Relay TodoMVC example](https://github.com/facebook/relay/tree/master/examples/todo) as a base.
 
 ## Troubleshooting
 
