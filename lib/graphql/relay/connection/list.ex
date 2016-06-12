@@ -1,9 +1,7 @@
 defmodule GraphQL.Relay.Connection.List do
   @prefix "arrayconnection:"
 
-  def resolve(data) do
-    resolve(data, %{})
-  end
+  def resolve(data), do: resolve(data, %{})
   def resolve(data, args) do
     resolve_slice(data, args, %{
       slice_start: 0,
@@ -19,25 +17,28 @@ defmodule GraphQL.Relay.Connection.List do
     slice_start = meta[:slice_start] || 0
     list_length = meta[:list_length] || length(records)
     slice_end = slice_start + length(records)
-    before_offset = get_offset_with_default(before, list_length)
-    after_offset = get_offset_with_default(a_after, -1)
+    before_offset = cursor_to_offset(before, list_length)
+    after_offset = cursor_to_offset(a_after, -1)
     start_offset = Enum.max([slice_start - 1, after_offset, -1]) + 1
     end_offset = Enum.min([slice_end, before_offset, list_length])
 
-    if first do
-      end_offset = Enum.min([end_offset, start_offset + first])
+    end_offset = if first do
+      Enum.min([end_offset, start_offset + first])
+    else
+      end_offset
     end
 
-    if last do
-      start_offset = Enum.max([start_offset, end_offset - last])
+    start_offset = if last do
+      Enum.max([start_offset, end_offset - last])
+    else
+      start_offset
     end
 
     from_slice = Enum.max([start_offset - slice_start, 0])
     to_slice = length(records) - (slice_end - end_offset) - 1
     slice = case first do
       0 -> []
-      _ ->
-        Enum.slice(records, from_slice..to_slice)
+      _ -> Enum.slice(records, from_slice..to_slice)
     end
 
     {edges, _count} = Enum.map_reduce(slice, 0, fn(record, acc) -> {%{ cursor: offset_to_cursor(start_offset+acc), node: record }, acc + 1} end)
@@ -58,22 +59,14 @@ defmodule GraphQL.Relay.Connection.List do
     }
   end
 
-  def get_offset_with_default(cursor, default_offset) do
-    unless cursor do
-      default_offset
-    else
-      offset = cursor_to_offset(cursor)
-      offset || default_offset
-    end
-  end
-
-  def cursor_to_offset(cursor) do
+  def cursor_to_offset(nil, default), do: default
+  def cursor_to_offset(cursor, default) do
     case Base.decode64(cursor) do
       {:ok, decoded_cursor} ->
         {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
         int
       :error ->
-        nil
+        default
     end
   end
 

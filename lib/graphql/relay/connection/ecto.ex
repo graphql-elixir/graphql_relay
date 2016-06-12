@@ -16,16 +16,19 @@ if Code.ensure_loaded?(Ecto) do
       last = args[:last]
       limit = Enum.min([first, last, connection_count(repo, query)])
 
-      if a_after do
-        query = from things in query, where: things.id > ^a_after
+      query = if a_after do
+        from things in query, where: things.id > ^a_after
+      else
+        query
       end
 
-      if before do
-        query = from things in query, where: things.id < ^before
+      query = if before do
+        from things in query, where: things.id < ^before
+      else
+        query
       end
 
-      # Calculate has_next_page/has_prev_page before order_by to avoid group_by
-      # requirement
+      # Calculate has_next_page/has_prev_page before order_by to avoid group_by requirement
       has_next_page = case first do
         nil -> false
         _ ->
@@ -44,16 +47,16 @@ if Code.ensure_loaded?(Ecto) do
           repo.one(has_prev_records_query) > last
       end
 
-      if first do
-        query = from things in query, order_by: [asc: things.id], limit: ^limit
+      query = if first do
+        from things in query, order_by: [asc: things.id], limit: ^limit
       else
-        has_next_page = false
+        query
       end
 
-      if last do
-        query = from things in query, order_by: [desc: things.id], limit: ^limit
+      query = if last do
+        from things in query, order_by: [desc: things.id], limit: ^limit
       else
-        has_prev_page = false
+        query
       end
 
       records = repo.all(query)
@@ -66,10 +69,8 @@ if Code.ensure_loaded?(Ecto) do
       end)
 
       edges = case last do
-        nil ->
-          edges
-        _ ->
-          Enum.reverse(edges)
+        nil -> edges
+        _ -> Enum.reverse(edges)
       end
 
       first_edge = List.first(edges)
@@ -121,8 +122,8 @@ if Code.ensure_loaded?(Ecto) do
 
     defp make_query_countable(query) do
       query
-        |> remove_select
-        |> remove_order
+      |> remove_select
+      |> remove_order
     end
 
     # Remove select if it exists so that we avoid `only one select
