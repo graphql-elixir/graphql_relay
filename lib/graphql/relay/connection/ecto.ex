@@ -129,13 +129,13 @@ if Code.ensure_loaded?(Ecto) do
     # Remove select if it exists so that we avoid `only one select
     # expression is allowed in query` Ecto exception
     defp remove_select(query) do
-      query |> Ecto.Query.exclude(:select)
+      Ecto.Query.exclude(query, :select)
     end
 
     # Remove order by if it exists so that we avoid `field X in "order_by"
     # does not exist in the model source in query`
     defp remove_order(query) do
-      query |> Ecto.Query.exclude(:order_by)
+      Ecto.Query.exclude(query, :order_by)
     end
   end
 end
