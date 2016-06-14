@@ -80,34 +80,22 @@ if Code.ensure_loaded?(Ecto) do
       %{
         edges: edges,
         pageInfo: %{
-          startCursor: first_edge && Map.get(first_edge, :cursor) || nil,
-          endCursor: last_edge && Map.get(last_edge, :cursor) || nil,
+          startCursor: first_edge && Map.get(first_edge, :cursor),
+          endCursor: last_edge && Map.get(last_edge, :cursor),
           hasPreviousPage: has_prev_page,
           hasNextPage: has_next_page
         }
       }
     end
 
-    def get_offset_with_default(cursor, default_offset) do
-      unless cursor do
-        default_offset
-      else
-        offset = cursor_to_offset(cursor)
-        offset || default_offset
-      end
-    end
-
+    def cursor_to_offset(nil), do: nil
     def cursor_to_offset(cursor) do
-      case cursor do
-        nil -> nil
-        _ ->
-          case Base.decode64(cursor) do
-            {:ok, decoded_cursor} ->
-              {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
-              int
-            :error ->
-              nil
-          end
+      case Base.decode64(cursor) do
+        {:ok, decoded_cursor} ->
+          {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
+          int
+        :error ->
+          nil
       end
     end
 

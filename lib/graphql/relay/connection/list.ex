@@ -42,7 +42,9 @@ defmodule GraphQL.Relay.Connection.List do
       _ -> Enum.slice(records, from_slice..to_slice)
     end
 
-    {edges, _count} = Enum.map_reduce(slice, 0, fn(record, acc) -> {%{ cursor: offset_to_cursor(start_offset+acc), node: record }, acc + 1} end)
+    {edges, _count} = Enum.map_reduce(slice, 0, fn(record, acc) ->
+      {%{cursor: offset_to_cursor(start_offset+acc), node: record}, acc + 1}
+    end)
 
     first_edge = List.first(edges)
     last_edge = List.last(edges)
@@ -52,8 +54,8 @@ defmodule GraphQL.Relay.Connection.List do
     %{
       edges: edges,
       pageInfo: %{
-        startCursor: first_edge && Map.get(first_edge, :cursor) || nil,
-        endCursor: last_edge && Map.get(last_edge, :cursor) || nil,
+        startCursor: first_edge && Map.get(first_edge, :cursor),
+        endCursor: last_edge && Map.get(last_edge, :cursor),
         hasPreviousPage: last && (start_offset > lower_bound) || false,
         hasNextPage: first && (end_offset < upper_bound) || false
       }
@@ -73,13 +75,10 @@ defmodule GraphQL.Relay.Connection.List do
 
   def cursor_for_object_in_connection(data, object) do
     offset = Enum.find_index(data, fn(obj) -> object == obj end)
-    unless offset do
-      nil
-    else
-      offset_to_cursor(offset)
-    end
+    offset_to_cursor(offset)
   end
 
+  def offset_to_cursor(nil), do: nil
   def offset_to_cursor(offset) do
     Base.encode64("#{@prefix}#{offset}")
   end
