@@ -11,6 +11,7 @@ if Code.ensure_loaded?(Ecto) do
 
     def resolve(query, %{repo: repo} = args) do
       before = cursor_to_offset(args[:before])
+      # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]

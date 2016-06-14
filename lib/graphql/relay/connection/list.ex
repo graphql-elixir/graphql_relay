@@ -11,6 +11,7 @@ defmodule GraphQL.Relay.Connection.List do
 
   def resolve_slice(records, args, meta) do
     before = args[:before]
+    # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
     a_after = args[:after]
     first = args[:first]
     last = args[:last]
