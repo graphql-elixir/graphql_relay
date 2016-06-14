@@ -33,7 +33,7 @@ config :logger, level: :info
 # Example
 # config :graphql_relay,
 #   schema_module: GraphQL.Schema.Root,
-#   schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
+#   schema_json_path: "#{Path.dirname(__DIR__)}/priv/graphql"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

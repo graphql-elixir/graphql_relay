@@ -30,4 +30,4 @@ config :phoenix, :generators,
 
 config :graphql_relay,
   schema_module: Todo.GraphQL.Schema.Root,
-  schema_json_path: "#{Path.dirname(__DIR__)}/priv/repo/graphql"
+  schema_json_path: "#{Path.dirname(__DIR__)}/priv/graphql"

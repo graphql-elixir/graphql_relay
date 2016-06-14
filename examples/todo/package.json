@@ -29,7 +29,7 @@
   },
   "metadata": {
     "graphql": {
-      "schema": "./priv/repo/graphql/schema.json"
+      "schema": "./priv/graphql/schema.json"
     }
   }
 }
