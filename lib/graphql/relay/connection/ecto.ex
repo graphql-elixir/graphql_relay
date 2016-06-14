@@ -11,21 +11,25 @@ if Code.ensure_loaded?(Ecto) do
 
     def resolve(query, %{repo: repo} = args) do
       before = cursor_to_offset(args[:before])
+      # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]
       limit = Enum.min([first, last, connection_count(repo, query)])
 
-      if a_after do
-        query = from things in query, where: things.id > ^a_after
+      query = if a_after do
+        from things in query, where: things.id > ^a_after
+      else
+        query
       end
 
-      if before do
-        query = from things in query, where: things.id < ^before
+      query = if before do
+        from things in query, where: things.id < ^before
+      else
+        query
       end
 
-      # Calculate has_next_page/has_prev_page before order_by to avoid group_by
-      # requirement
+      # Calculate has_next_page/has_prev_page before order_by to avoid group_by requirement
       has_next_page = case first do
         nil -> false
         _ ->
@@ -44,16 +48,16 @@ if Code.ensure_loaded?(Ecto) do
           repo.one(has_prev_records_query) > last
       end
 
-      if first do
-        query = from things in query, order_by: [asc: things.id], limit: ^limit
+      query = if first do
+        from things in query, order_by: [asc: things.id], limit: ^limit
       else
-        has_next_page = false
+        query
       end
 
-      if last do
-        query = from things in query, order_by: [desc: things.id], limit: ^limit
+      query = if last do
+        from things in query, order_by: [desc: things.id], limit: ^limit
       else
-        has_prev_page = false
+        query
       end
 
       records = repo.all(query)
@@ -66,10 +70,8 @@ if Code.ensure_loaded?(Ecto) do
       end)
 
       edges = case last do
-        nil ->
-          edges
-        _ ->
-          Enum.reverse(edges)
+        nil -> edges
+        _ -> Enum.reverse(edges)
       end
 
       first_edge = List.first(edges)
@@ -78,34 +80,22 @@ if Code.ensure_loaded?(Ecto) do
       %{
         edges: edges,
         pageInfo: %{
-          startCursor: first_edge && Map.get(first_edge, :cursor) || nil,
-          endCursor: last_edge && Map.get(last_edge, :cursor) || nil,
+          startCursor: first_edge && Map.get(first_edge, :cursor),
+          endCursor: last_edge && Map.get(last_edge, :cursor),
           hasPreviousPage: has_prev_page,
           hasNextPage: has_next_page
         }
       }
     end
 
-    def get_offset_with_default(cursor, default_offset) do
-      unless cursor do
-        default_offset
-      else
-        offset = cursor_to_offset(cursor)
-        offset || default_offset
-      end
-    end
-
+    def cursor_to_offset(nil), do: nil
     def cursor_to_offset(cursor) do
-      case cursor do
-        nil -> nil
-        _ ->
-          case Base.decode64(cursor) do
-            {:ok, decoded_cursor} ->
-              {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
-              int
-            :error ->
-              nil
-          end
+      case Base.decode64(cursor) do
+        {:ok, decoded_cursor} ->
+          {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
+          int
+        :error ->
+          nil
       end
     end
 
@@ -121,20 +111,20 @@ if Code.ensure_loaded?(Ecto) do
 
     defp make_query_countable(query) do
       query
-        |> remove_select
-        |> remove_order
+      |> remove_select
+      |> remove_order
     end
 
     # Remove select if it exists so that we avoid `only one select
     # expression is allowed in query` Ecto exception
     defp remove_select(query) do
-      query |> Ecto.Query.exclude(:select)
+      Ecto.Query.exclude(query, :select)
     end
 
     # Remove order by if it exists so that we avoid `field X in "order_by"
     # does not exist in the model source in query`
     defp remove_order(query) do
-      query |> Ecto.Query.exclude(:order_by)
+      Ecto.Query.exclude(query, :order_by)
     end
   end
 end

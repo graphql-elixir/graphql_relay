@@ -6,13 +6,8 @@ defmodule GraphQL.Relay do
   """
 
   @spec resolve_maybe_thunk(fun | map) :: %{}
-  def resolve_maybe_thunk(thing_or_thunk) do
-    if Kernel.is_function(thing_or_thunk) do
-      thing_or_thunk.()
-    else
-      thing_or_thunk
-    end
-  end
+  def resolve_maybe_thunk(t) when is_function(t), do: t.()
+  def resolve_maybe_thunk(t), do: t
 
   def generate_schema_json! do
     Logger.debug "Updating GraphQL schema.json"
