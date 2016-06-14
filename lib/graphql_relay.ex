@@ -20,10 +20,10 @@ defmodule GraphQL.Relay do
     data_dir = Application.fetch_env!(:graphql_relay, :schema_json_path)
 
     File.mkdir_p!(data_dir)
-    File.write!(Path.join(data_dir, "schema.json"), introspection)
+    File.write!(Path.join(data_dir, "schema.json"), introspect)
   end
 
-  defp introspection do
+  def introspect do
     schema_module = Application.fetch_env!(:graphql_relay, :schema_module)
     {_, data} = GraphQL.execute(apply(schema_module, :schema, []), GraphQL.Type.Introspection.query)
     Poison.encode!(data, pretty: true)
