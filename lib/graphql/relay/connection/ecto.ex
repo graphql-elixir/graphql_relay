@@ -18,13 +18,13 @@ if Code.ensure_loaded?(Ecto) do
       limit = Enum.min([first, last, connection_count(repo, query)])
 
       query = if a_after do
-        from things in query, where: things.id > ^a_after
+        from things in query, where: things.inserted_at > ^a_after
       else
         query
       end
 
       query = if before do
-        from things in query, where: things.id < ^before
+        from things in query, where: things.inserted_at < ^before
       else
         query
       end
@@ -49,13 +49,13 @@ if Code.ensure_loaded?(Ecto) do
       end
 
       query = if first do
-        from things in query, order_by: [asc: things.id], limit: ^limit
+        from things in query, order_by: [asc: things.inserted_at], limit: ^limit
       else
         query
       end
 
       query = if last do
-        from things in query, order_by: [desc: things.id], limit: ^limit
+        from things in query, order_by: [desc: things.inserted_at], limit: ^limit
       else
         query
       end
@@ -92,15 +92,19 @@ if Code.ensure_loaded?(Ecto) do
     def cursor_to_offset(cursor) do
       case Base.decode64(cursor) do
         {:ok, decoded_cursor} ->
-          {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
-          int
+          date_string = String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor))
+          case Ecto.DateTime.cast(date_string) do
+            {:ok, date} -> date
+            _ -> nil
+          end
         :error ->
           nil
       end
     end
 
     def cursor_for_object_in_connection(object) do
-      Base.encode64("#{@prefix}#{object.id}")
+      date_string = Ecto.DateTime.to_iso8601(object.inserted_at)
+      Base.encode64("#{@prefix}#{date_string}")
     end
 
     def connection_count(repo, query) do
