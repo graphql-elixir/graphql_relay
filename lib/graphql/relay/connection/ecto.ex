@@ -111,8 +111,21 @@ if Code.ensure_loaded?(Ecto) do
 
     defp make_query_countable(query) do
       query
-      |> remove_select
       |> remove_order
+      |> remove_preload
+      |> remove_select
+    end
+
+    # Remove order by if it exists so that we avoid `field X in "order_by"
+    # does not exist in the model source in query`
+    defp remove_order(query) do
+      Ecto.Query.exclude(query, :order_by)
+    end
+
+    # Remove preload if it exists so that we avoid "the binding used in `from`
+    # must be selected in `select` when using `preload` in query`"
+    defp remove_preload(query) do
+      query |> Ecto.Query.exclude(:preload)
     end
 
     # Remove select if it exists so that we avoid `only one select
@@ -121,10 +134,5 @@ if Code.ensure_loaded?(Ecto) do
       Ecto.Query.exclude(query, :select)
     end
 
-    # Remove order by if it exists so that we avoid `field X in "order_by"
-    # does not exist in the model source in query`
-    defp remove_order(query) do
-      Ecto.Query.exclude(query, :order_by)
-    end
   end
 end
