@@ -1,4 +1,10 @@
 defmodule GraphQL.Relay.Connection.List do
+  @moduledoc """
+  Interface between Relay Connections and a list. This module allows you to
+  back a Relay Connection with a common list.
+
+  See tests for examples https://github.com/graphql-elixir/graphql_relay/blob/master/test/graphql/relay/connection/list_test.exs
+  """
   @prefix "arrayconnection:"
 
   def resolve(data), do: resolve(data, %{})

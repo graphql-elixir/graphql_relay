@@ -17,19 +17,29 @@ defmodule GraphQL.Relay.Connection.EctoTest do
   end
 
   setup_all do
-    Repo.insert(%Letter{letter: a})
-    Repo.insert(%Letter{letter: b})
-    Repo.insert(%Letter{letter: c})
-    Repo.insert(%Letter{letter: d})
-    Repo.insert(%Letter{letter: e})
-
-    Ecto.Adapters.SQL.begin_test_transaction(Repo)
-
+    # Ecto v1.x
+    # Repo.insert(%Letter{letter: "a"})
+    # Repo.insert(%Letter{letter: "b"})
+    # Repo.insert(%Letter{letter: "c"})
+    # Repo.insert(%Letter{letter: "d"})
+    # Repo.insert(%Letter{letter: "e"})
+    # Ecto.Adapters.SQL.begin_test_transaction(Repo)
     :ok
   end
 
   setup do
-    Ecto.Adapters.SQL.restart_test_transaction(Repo, [])
+    # Ecto v1.x
+    # Ecto.Adapters.SQL.restart_test_transaction(Repo, [])
+
+    # Ecto v2.x
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
+    Repo.insert(%Letter{id: 1, letter: "a"})
+    Repo.insert(%Letter{id: 2, letter: "b"})
+    Repo.insert(%Letter{id: 3, letter: "c"})
+    Repo.insert(%Letter{id: 4, letter: "d"})
+    Repo.insert(%Letter{id: 5, letter: "e"})
+
+    :ok
   end
 
   def letters do
@@ -64,7 +74,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     query = letters_query
       |> select([l], %{id: l.id, letter: l.letter})
       |> order_by([l], asc: l.second_column)
-    assert(Connection.Ecto.resolve(query, %{repo: Repo}))
+    assert(Connection.Ecto.resolve(Repo, query))
   end
 
   test "basic slicing: returns all elements without filters" do
@@ -98,7 +108,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false
       }
     }
-    result = Connection.Ecto.resolve(letters_query, %{repo: Repo})
+    result = Connection.Ecto.resolve(Repo, letters_query)
     assert(result == expected)
   end
 
@@ -120,7 +130,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    result = Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 2})
+    result = Connection.Ecto.resolve(Repo, letters_query, %{first: 2})
     assert(result == expected)
   end
 
@@ -155,7 +165,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 10}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 10}) == expected)
   end
 
   test "respects a smaller last" do
@@ -177,7 +187,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 2}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 2}) == expected)
   end
 
   test "respects an overly large last" do
@@ -211,7 +221,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 10}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 10}) == expected)
   end
 
   test "pagination: respects first and after" do
@@ -233,7 +243,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 2, after: "ZWN0b2Nvbm5lY3Rpb246Mg=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: "ZWN0b2Nvbm5lY3Rpb246Mg=="}) == expected)
   end
 
   test "respects first and after with long first" do
@@ -259,7 +269,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 10, after: "ZWN0b2Nvbm5lY3Rpb246Mg=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 10, after: "ZWN0b2Nvbm5lY3Rpb246Mg=="}) == expected)
   end
 
   test "respects last and before" do
@@ -281,7 +291,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 2, before: "ZWN0b2Nvbm5lY3Rpb246NA=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 2, before: "ZWN0b2Nvbm5lY3Rpb246NA=="}) == expected)
   end
 
   test "respects last and before with long last" do
@@ -307,7 +317,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 10, before: "ZWN0b2Nvbm5lY3Rpb246NA=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 10, before: "ZWN0b2Nvbm5lY3Rpb246NA=="}) == expected)
   end
 
   test "respects first and after and before, too few" do
@@ -329,7 +339,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 2, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "respects first and after and before, too many" do
@@ -355,7 +365,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 4, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 4, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "respects first and after and before, exactly right" do
@@ -381,7 +391,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 3, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 3, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "respects last and after and before, too few" do
@@ -403,7 +413,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 2, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 2, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "respects last and after and before, too many" do
@@ -429,7 +439,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 4, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 4, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "respects last and after and before, exactly right" do
@@ -455,7 +465,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, last: 3, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 3, "after": "ZWN0b2Nvbm5lY3Rpb246MQ==", before: "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "cursor edge cases: returns no elements if first is 0" do
@@ -468,7 +478,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, first: 0}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 0}) == expected)
   end
 
   test "returns all elements if cursors are invalid" do
@@ -502,7 +512,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, before: "invalid", after: "invalid"}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{before: "invalid", after: "invalid"}) == expected)
   end
 
   test "returns all elements if cursors are on the outside" do
@@ -536,7 +546,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, before: "ZWN0b2Nvbm5lY3Rpb246Ng==", "after": "ZWN0b2Nvbm5lY3Rpb246LTE="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{before: "ZWN0b2Nvbm5lY3Rpb246Ng==", "after": "ZWN0b2Nvbm5lY3Rpb246LTE="}) == expected)
   end
 
   test "returns no elements if cursors cross" do
@@ -550,7 +560,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: false,
       }
     }
-    assert(Connection.Ecto.resolve(letters_query, %{repo: Repo, before: "ZWN0b2Nvbm5lY3Rpb246Mw==", "after": "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{before: "ZWN0b2Nvbm5lY3Rpb246Mw==", "after": "ZWN0b2Nvbm5lY3Rpb246NQ=="}) == expected)
   end
 
   test "cursor_for_object_in_connection: returns an edge's cursor" do
