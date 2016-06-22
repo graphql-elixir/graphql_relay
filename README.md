@@ -11,7 +11,7 @@ This library relies on the [GraphQL Elixir](https://github.com/graphql-elixir/gr
 Add `graphql_relay` to your list of dependencies in `mix.exs`:
 
     def deps do
-      [{:graphql_relay, "~> 0.3"}]
+      [{:graphql_relay, "~> 0.4"}]
     end
 
 ## Configuration
