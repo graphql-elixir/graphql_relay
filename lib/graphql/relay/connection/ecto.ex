@@ -15,16 +15,19 @@ if Code.ensure_loaded?(Ecto) do
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]
+      where_property = args[:where] || :id
       limit = Enum.min([first, last, connection_count(repo, query)])
 
       query = if a_after do
-        from things in query, where: things.inserted_at > ^a_after
+        frag = [{where_property, [>: a_after]}]
+        query |> where(fragment(^frag))
       else
         query
       end
 
       query = if before do
-        from things in query, where: things.inserted_at < ^before
+        frag = [{where_property, [<: before]}]
+        query |> where(fragment(^frag))
       else
         query
       end
@@ -49,13 +52,13 @@ if Code.ensure_loaded?(Ecto) do
       end
 
       query = if first do
-        from things in query, order_by: [asc: things.inserted_at], limit: ^limit
+        query |> order_by(asc: ^where_property) |> limit(^limit)
       else
         query
       end
 
       query = if last do
-        from things in query, order_by: [desc: things.inserted_at], limit: ^limit
+        query |> order_by(desc: ^where_property) |> limit(^limit)
       else
         query
       end
@@ -64,7 +67,7 @@ if Code.ensure_loaded?(Ecto) do
 
       edges = Enum.map(records, fn(record) ->
         %{
-          cursor: cursor_for_object_in_connection(record),
+          cursor: cursor_for_object_in_connection(record, where_property),
           node: record
         }
       end)
@@ -92,19 +95,23 @@ if Code.ensure_loaded?(Ecto) do
     def cursor_to_offset(cursor) do
       case Base.decode64(cursor) do
         {:ok, decoded_cursor} ->
-          date_string = String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor))
-          case Ecto.DateTime.cast(date_string) do
+          string = String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor))
+          case Ecto.DateTime.cast(string) do
             {:ok, date} -> date
-            _ -> nil
+            :error -> string
           end
         :error ->
           nil
       end
     end
 
-    def cursor_for_object_in_connection(object) do
-      date_string = Ecto.DateTime.to_iso8601(object.inserted_at)
-      Base.encode64("#{@prefix}#{date_string}")
+    def cursor_for_object_in_connection(object, property \\ :id) do
+      prop = case Map.get(object, property) do
+        %Ecto.DateTime{} = date_time -> Ecto.DateTime.to_iso8601(date_time)
+        prop -> to_string(prop)
+      end
+
+      Base.encode64("#{@prefix}#{prop}")
     end
 
     def connection_count(repo, query) do
@@ -117,6 +124,7 @@ if Code.ensure_loaded?(Ecto) do
       query
       |> remove_select
       |> remove_order
+      |> remove_preload
     end
 
     # Remove select if it exists so that we avoid `only one select
@@ -129,6 +137,12 @@ if Code.ensure_loaded?(Ecto) do
     # does not exist in the model source in query`
     defp remove_order(query) do
       Ecto.Query.exclude(query, :order_by)
+    end
+
+    # Remove preload if it exists so that we avoid unnecessary joins
+    # when trying to retrieve a count
+    defp remove_preload(query) do
+      Ecto.Query.exclude(query, :preload)
     end
   end
 end
