@@ -224,7 +224,7 @@ defmodule Todo.GraphQL.Schema.Todo do
             end
           },
         },
-        mutate_and_get_payload: fn(input, _info) ->
+        mutate_and_get_payload: fn(_input, _info) ->
           # [_, user_id] = Node.from_global_id(input["viewer"]["id"])
           todos = Todo.GraphQL.Schema.Todo.delete_completed(1)
           %{

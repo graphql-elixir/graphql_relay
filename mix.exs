@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.3.0"
+  @version "0.4.0"
   @description "Relay helpers for GraphQL Elixir"
   @repo_url "https://github.com/graphql-elixir/graphql_relay"
 
@@ -34,8 +34,8 @@ defmodule GraphQL.Relay.Mixfile do
     [
       {:graphql, "~> 0.3"},
       {:poison, "~> 1.5 or ~> 2.0"}, # For .generate_schema_json!
-      {:ecto, "~> 1.1.4", optional: true},
-      {:sqlite_ecto, "~> 1.0.0", only: [:dev, :test]},
+      {:ecto, "~> 1.0 or ~> 2.0", optional: true, only: [:dev, :test]},
+      {:postgrex, ">= 0.0.0", only: [:dev, :test]},
     ]
   end
 

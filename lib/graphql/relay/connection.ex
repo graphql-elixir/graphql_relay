@@ -1,13 +1,13 @@
 defmodule GraphQL.Relay.Connection do
-  @doc """
-  Any type whose name ends in "Connection" is considered by Relay to be a
-  Connection Type. Connection types must be an "Object" as defined in the
-  "Type System" section of the GraphQL Specification.
+  @moduledoc """
+  You define a Connection for Relay when you want a paginated data source.
 
-  Connection types must have fields named edges and pageInfo. They may have
-  additional fields related to the connection, as the schema designer sees fit.
+  For example, in a Todo application a User can have many Todos that you want
+  to list and paginate through. A Connection is the perfect fit for this.
 
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Connection-Types
+  For an example see https://github.com/graphql-elixir/graphql_relay/blob/44e6912a08468743f7dfa1343723914bbf6809e1/examples/todo/web/graphql/user.ex
+
+  For the Connection type specification see: https://facebook.github.io/relay/graphql/connections.htm#sec-Connection-Types
   """
   alias GraphQL.Type.Boolean
   alias GraphQL.Type.Int

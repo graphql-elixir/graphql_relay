@@ -8,6 +8,8 @@ defmodule GraphQL.Relay.Mutation do
   then returned as part of the object returned by the mutation field.
 
   https://facebook.github.io/relay/graphql/mutations.htm
+
+  For an example see https://github.com/graphql-elixir/graphql_relay/blob/44e6912a08468743f7dfa1343723914bbf6809e1/examples/todo/web/graphql/todo.ex#L110
   """
   alias GraphQL.Type.NonNull
   alias GraphQL.Type.ObjectType

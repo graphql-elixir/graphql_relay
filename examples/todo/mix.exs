@@ -3,7 +3,7 @@ defmodule Todo.Mixfile do
 
   def project do
     [app: :todo,
-     version: "0.0.1",
+     version: "0.1.0",
      elixir: "~> 1.0",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix] ++ Mix.compilers,
@@ -30,14 +30,14 @@ defmodule Todo.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.1.4"},
-     {:phoenix_ecto, "~> 2.0"},
-     {:postgrex, "~> 0.11"},
-     {:phoenix_html, "~> 2.3"},
+    [{:phoenix, "~> 1.1.6"},
+     {:phoenix_ecto, "~> 3.0"},
+     {:postgrex, ">= 0.0.0"},
+     {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"},
-     {:graphql_relay, "~> 0.0.17"},
-     {:plug_graphql, "~> 0.3.0"}]
+     {:graphql_relay, "~> 0.4"},
+     {:plug_graphql, "~> 0.3"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
