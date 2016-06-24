@@ -19,15 +19,13 @@ if Code.ensure_loaded?(Ecto) do
       limit = Enum.min([first, last, connection_count(repo, query)])
 
       query = if a_after do
-        frag = [{where_property, [>: a_after]}]
-        query |> where(fragment(^frag))
+        query |> where([a], field(a, ^where_property) > ^a_after)
       else
         query
       end
 
       query = if before do
-        frag = [{where_property, [<: before]}]
-        query |> where(fragment(^frag))
+        query |> where([a], field(a, ^where_property) < ^before)
       else
         query
       end
