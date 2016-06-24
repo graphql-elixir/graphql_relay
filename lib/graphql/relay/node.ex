@@ -1,10 +1,15 @@
 defmodule GraphQL.Relay.Node do
   @doc """
-  Relay’s support for object identification relies on the GraphQL server exposing object identifiers in a standardized way. In the query, the schema should provide a standard mechanism for asking for an object by ID. In the response, the schema provides a standard way of providing these IDs.
+  Relay’s support for object identification relies on the GraphQL server
+  exposing object identifiers in a standardized way. In the query, the schema
+  should provide a standard mechanism for asking for an object by ID. In the
+  response, the schema provides a standard way of providing these IDs.
 
   We refer to objects with identifiers as “nodes”.
 
   http://facebook.github.io/relay/graphql/objectidentification.htm
+
+  For an example see https://github.com/graphql-elixir/graphql_relay/blob/44e6912a08468743f7dfa1343723914bbf6809e1/examples/todo/web/graphql/root.ex#L6
   """
   alias GraphQL.Type.ID
   alias GraphQL.Type.Interface

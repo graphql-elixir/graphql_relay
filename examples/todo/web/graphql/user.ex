@@ -26,14 +26,13 @@ defmodule Todo.GraphQL.Schema.User do
             Connection.args
           ),
           resolve: fn(user, args, _ctx) ->
-            args = Map.put(args, :repo, Repo)
             query = Ecto.assoc(user, :todos)
             query = case args do
               %{status: "active"} -> from things in query, where: things.complete == false
               %{status: "completed"} -> from things in query, where: things.complete == true
               _ -> query
             end
-            Connection.Ecto.resolve(query, args)
+            Connection.Ecto.resolve(Repo, query, args)
           end
         },
         totalCount: %{

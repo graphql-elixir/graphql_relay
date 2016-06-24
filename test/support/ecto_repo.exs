@@ -1,5 +1,3 @@
-defmodule EctoTest do
-  defmodule Repo do
-    use Ecto.Repo, otp_app: :graphql_relay, adapter: Sqlite.Ecto
-  end
+defmodule EctoTest.Repo do
+  use Ecto.Repo, otp_app: :graphql_relay, adapter: Ecto.Adapters.Postgres
 end

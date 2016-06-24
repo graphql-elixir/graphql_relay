@@ -1,9 +1,8 @@
 defmodule GraphQL.Relay do
-  require Logger
-
   @moduledoc """
   Elixir library containing helpers for making a GraphQL server Relay compliant.
   """
+  require Logger
 
   @spec resolve_maybe_thunk(fun | map) :: %{}
   def resolve_maybe_thunk(t) when is_function(t), do: t.()

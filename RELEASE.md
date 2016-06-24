@@ -10,19 +10,21 @@ This document outlines the release process:
 
 4. Run `mix test` to ensure all tests pass
 
-5. Commit changes above with title "Release vVERSION" and push to GitHub
+5. Update `examples` to use new version
+
+6. Commit changes above with title "Release vVERSION" and push to GitHub
 
     git add .
     git commit -m"Release vX.Y.Z"
     git push origin master
 
-6. Check CI is green
+7. Check CI is green
 
-7. Create a release on GitHub and add the CHANGELOG from step #2 (https://github.com/graphql-elixir/graphql/releases/new) using VERSION as the tag and title
+8. Create a release on GitHub and add the CHANGELOG from step #2 (https://github.com/graphql-elixir/graphql/releases/new) using VERSION as the tag and title
 
-8. Publish new hex release with `mix hex.publish`
+9. Publish new hex release with `mix hex.publish`
 
-9. Publish hex docs with `mix hex.docs`
+10. Publish hex docs with `mix hex.docs`
 
 ## Deprecation policy
 

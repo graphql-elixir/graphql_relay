@@ -1,15 +1,63 @@
 if Code.ensure_loaded?(Ecto) do
   defmodule GraphQL.Relay.Connection.Ecto do
     @moduledoc """
-    Interface between Relay Connections and Ecto Queries.
+    Interface between Relay Connections and Ecto. This module allows you to
+    back a Relay Connection with an Ecto query.
 
-    In other words, this module allows you to back a Relay Connection with an
-    Ecto query.
+    ## Example
+
+    A Relay connection starts with a connection definition. For example, a
+    `user` can have many `todos` (see code comments):
+
+    ```elixir
+    %ObjectType{
+      name: "User",
+      description: "The user",
+      fields: %{
+        id: Node.global_id_field("user"),
+        name: %{type: %String{}},
+        email: %{type: %String{}},
+        todos: %{
+          type: Todo.connection[:connection_type],
+          description: "The todos this user owns",
+          args: Map.merge(
+            %{status: %{type: %String{}, defaultValue: "any"}},
+            Connection.args
+          ),
+          resolve: fn(user, args, _ctx) ->
+            # Here we prepare our Ecto query
+            query = Ecto.assoc(user, :todos)
+            query = case args do
+              %{status: "active"} -> from things in query, where: things.complete == false
+              %{status: "completed"} -> from things in query, where: things.complete == true
+              _ -> query
+            end
+            # Here we resolve the connection using our Ecto Connection module,
+            # passing it the Ecto Repo we want to query. The `resolve/3` function
+            # will execute the query and return the results in the form Relay
+            # requires.
+            Connection.Ecto.resolve(Repo, query, args)
+          end
+        },
+      },
+      interfaces: [Root.node_interface]
+    }
+    ```
+    For a full example see https://github.com/graphql-elixir/graphql_relay/blob/master/examples/todo/web/graphql/user.ex
     """
     import Ecto.Query
     @prefix "ectoconnection:"
 
+    @doc """
+    WARNING: this function signature is deprecated. Use `resolve/3`.
+    """
     def resolve(query, %{repo: repo} = args) do
+      # Emit deprecation warning once we hit >= v0.6 per RELEASE.md#Deprecations
+      # :elixir_errors.warn __ENV__.line, __ENV__.file, "Use of `GraphQL.Relay.Connection.Ecto.resolve/2` is deprecated! Use `GraphQL.Relay.Connection.Ecto.resolve/3`."
+      resolve(repo, query, args)
+    end
+
+    def resolve(repo, query, args \\ %{}) do
       before = cursor_to_offset(args[:before])
       # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
       a_after = cursor_to_offset(args[:after])
@@ -120,15 +168,9 @@ if Code.ensure_loaded?(Ecto) do
 
     defp make_query_countable(query) do
       query
-      |> remove_select
       |> remove_order
       |> remove_preload
-    end
-
-    # Remove select if it exists so that we avoid `only one select
-    # expression is allowed in query` Ecto exception
-    defp remove_select(query) do
-      Ecto.Query.exclude(query, :select)
+      |> remove_select
     end
 
     # Remove order by if it exists so that we avoid `field X in "order_by"
@@ -137,10 +179,25 @@ if Code.ensure_loaded?(Ecto) do
       Ecto.Query.exclude(query, :order_by)
     end
 
-    # Remove preload if it exists so that we avoid unnecessary joins
-    # when trying to retrieve a count
+    # Remove preload if it exists so that we avoid "the binding used in `from`
+    # must be selected in `select` when using `preload` in query`"
     defp remove_preload(query) do
       Ecto.Query.exclude(query, :preload)
+    end
+
+    # Remove select if it exists so that we avoid `only one select
+    # expression is allowed in query` Ecto exception
+    defp remove_select(query) do
+      Ecto.Query.exclude(query, :select)
+    end
+  end
+else
+  defmodule GraphQL.Relay.Connection.Ecto do
+    def resolve(_, _) do
+      raise RuntimeError, message: """
+      Ecto not available. Make sure Ecto is installed as a dependency of your
+      application.
+      """
     end
   end
 end
