@@ -91,10 +91,10 @@ defmodule GraphQL.Relay.Connection.EctoTest do
   end
 
   defp edge_for_object(obj), do: edge_for_object(obj, :id)
-  defp edge_for_object(obj, where) do
+  defp edge_for_object(obj, ordered_by) do
     %{
       node: obj,
-      cursor: Base.encode64("ectoconnection:#{Map.get(obj, where)}")
+      cursor: Base.encode64("ectoconnection:#{Map.get(obj, ordered_by)}")
     }
   end
 
@@ -109,7 +109,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     query = letters_query
     |> join(:inner, [l], n in assoc(l, :number))
     |> preload(:number)
-    assert(Connection.Ecto.resolve(query, %{repo: Repo}))
+    assert(Connection.Ecto.resolve(Repo, query))
   end
 
   test "basic slicing: returns all elements without filters" do
@@ -216,10 +216,10 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b).cursor,}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b).cursor}) == expected)
   end
 
-  test "pagination: respects first and after with non-default where property" do
+  test "pagination: respects first and after with non-default ordered_by property" do
     expected = %{
       edges: [
         edge_for_object(c, :order),
@@ -232,7 +232,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
         hasNextPage: true,
       }
     }
-    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b, :order).cursor, where: :order}) == expected)
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b, :order).cursor, ordered_by: :order}) == expected)
   end
 
   test "respects first and after with long first" do

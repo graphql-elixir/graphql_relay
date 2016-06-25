@@ -63,17 +63,17 @@ if Code.ensure_loaded?(Ecto) do
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]
-      where_property = args[:where] || :id
+      ordered_by_property = args[:ordered_by] || :id
       limit = Enum.min([first, last, connection_count(repo, query)])
 
       query = if a_after do
-        query |> where([a], field(a, ^where_property) > ^a_after)
+        query |> where([a], field(a, ^ordered_by_property) > ^a_after)
       else
         query
       end
 
       query = if before do
-        query |> where([a], field(a, ^where_property) < ^before)
+        query |> where([a], field(a, ^ordered_by_property) < ^before)
       else
         query
       end
@@ -98,13 +98,13 @@ if Code.ensure_loaded?(Ecto) do
       end
 
       query = if first do
-        query |> order_by(asc: ^where_property) |> limit(^limit)
+        query |> order_by(asc: ^ordered_by_property) |> limit(^limit)
       else
         query
       end
 
       query = if last do
-        query |> order_by(desc: ^where_property) |> limit(^limit)
+        query |> order_by(desc: ^ordered_by_property) |> limit(^limit)
       else
         query
       end
@@ -113,7 +113,7 @@ if Code.ensure_loaded?(Ecto) do
 
       edges = Enum.map(records, fn(record) ->
         %{
-          cursor: cursor_for_object_in_connection(record, where_property),
+          cursor: cursor_for_object_in_connection(record, ordered_by_property),
           node: record
         }
       end)
