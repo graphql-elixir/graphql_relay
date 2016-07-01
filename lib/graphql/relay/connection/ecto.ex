@@ -57,22 +57,60 @@ if Code.ensure_loaded?(Ecto) do
       resolve(repo, query, args)
     end
 
+    @doc """
+    Pass in an Ecto.Repo, an Ecto.Query, and Relay args to have the query
+    executed and results returned in the format Relay requires.
+
+    If you wish to have the results ordered by some field other than `id`,
+    use `ordered_by` and `ordered_by_direction`.
+
+    Example for returning data in reverse chronological order (newest first)
+    like you would do for a page listing blog posts:
+
+      args = %{
+        first: 10,
+        ordered_by: :inserted_at,
+        ordered_by_direction: :desc
+      }
+
+    Your GraphQL resolve function for the connection will look something like:
+
+      resolve: fn(blog, args, _ctx) ->
+        # Order by desc inserted_at
+        args = Map.merge(args, %{ordered_by: :inserted_at, ordered_by_direction: :desc})
+        query = Ecto.assoc(blog, :posts)
+        GraphQL.Relay.Connection.Ecto.resolve(Repo, query, args)
+      end
+    """
     def resolve(repo, query, args \\ %{}) do
       before = cursor_to_offset(args[:before])
       # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]
+      ordered_by_property = args[:ordered_by] || :id
+      ordered_by_direction = get_ordered_by_direction(args[:ordered_by_direction] || :asc)
+      opposite_ordered_by_direction = if ordered_by_direction == :asc, do: :desc, else: :asc
       limit = Enum.min([first, last, connection_count(repo, query)])
 
       query = if a_after do
-        from things in query, where: things.id > ^a_after
+        case ordered_by_direction do
+          :asc ->
+            query |> where([a], field(a, ^ordered_by_property) > ^a_after)
+          :desc ->
+            query |> where([a], field(a, ^ordered_by_property) < ^a_after)
+        end
       else
         query
       end
 
       query = if before do
-        from things in query, where: things.id < ^before
+        case ordered_by_direction do
+          :asc ->
+            query |> where([a], field(a, ^ordered_by_property) < ^before)
+          :desc ->
+            query |> where([a], field(a, ^ordered_by_property) > ^before)
+        end
       else
         query
       end
@@ -97,13 +135,15 @@ if Code.ensure_loaded?(Ecto) do
       end
 
       query = if first do
-        from things in query, order_by: [asc: things.id], limit: ^limit
+        sort_values = Keyword.new([{ordered_by_direction, ordered_by_property}])
+        query |> order_by(^sort_values) |> limit(^limit)
       else
         query
       end
 
       query = if last do
-        from things in query, order_by: [desc: things.id], limit: ^limit
+        sort_values = Keyword.new([{opposite_ordered_by_direction, ordered_by_property}])
+        query |> order_by(^sort_values) |> limit(^limit)
       else
         query
       end
@@ -112,7 +152,7 @@ if Code.ensure_loaded?(Ecto) do
 
       edges = Enum.map(records, fn(record) ->
         %{
-          cursor: cursor_for_object_in_connection(record),
+          cursor: cursor_for_object_in_connection(record, ordered_by_property),
           node: record
         }
       end)
@@ -140,21 +180,33 @@ if Code.ensure_loaded?(Ecto) do
     def cursor_to_offset(cursor) do
       case Base.decode64(cursor) do
         {:ok, decoded_cursor} ->
-          {int, _} = Integer.parse(String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor)))
-          int
+          string = String.slice(decoded_cursor, String.length(@prefix)..String.length(decoded_cursor))
+          case Ecto.DateTime.cast(string) do
+            {:ok, date} -> date
+            :error -> string
+          end
         :error ->
           nil
       end
     end
 
-    def cursor_for_object_in_connection(object) do
-      Base.encode64("#{@prefix}#{object.id}")
+    def cursor_for_object_in_connection(object, property \\ :id) do
+      prop = case Map.get(object, property) do
+        %Ecto.DateTime{} = date_time -> Ecto.DateTime.to_iso8601(date_time)
+        prop -> to_string(prop)
+      end
+
+      Base.encode64("#{@prefix}#{prop}")
     end
 
     def connection_count(repo, query) do
       query = make_query_countable(query)
       count_query = from things in query, select: count(things.id)
       repo.one(count_query)
+    end
+
+    defp get_ordered_by_direction(value) when value in [:asc, :desc] do
+      value
     end
 
     defp make_query_countable(query) do
