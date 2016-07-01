@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (2016-07-01)
+
+* Add `ordered_by` and `ordered_by_direction` options for Ecto connections so we can sort a connection by field.
+
 ## 0.4.0 (2016-06-22)
 
 * Update optional dependency for Ecto to support both Ecto v1.x and v2.x.

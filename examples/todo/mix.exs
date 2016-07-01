@@ -36,7 +36,7 @@ defmodule Todo.Mixfile do
      {:phoenix_html, "~> 2.6"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"},
-     {:graphql_relay, "~> 0.4"},
+     {:graphql_relay, "~> 0.5"},
      {:plug_graphql, "~> 0.3"}]
   end
 
