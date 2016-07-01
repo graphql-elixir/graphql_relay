@@ -235,6 +235,22 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b, :order).cursor, ordered_by: :order}) == expected)
   end
 
+  test "pagination: respects first and after with non-default ordered_by and ordered_by_direction" do
+    expected = %{
+      edges: [
+        edge_for_object(d, :order),
+        edge_for_object(c, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(d, :order).cursor,
+        endCursor: edge_for_object(c, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(e, :order).cursor, ordered_by: :order, ordered_by_direction: :desc}) == expected)
+  end
+
   test "respects first and after with long first" do
     expected = %{
       edges: [
