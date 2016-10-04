@@ -165,15 +165,26 @@ if Code.ensure_loaded?(Ecto) do
       end
 
       query = if first do
-        sort_values = Keyword.new([{ordered_by_direction, ordered_by_property}])
-        query |> order_by(^sort_values) |> limit(^limit)
+        case query.order_bys do
+          [] ->
+            sort_values = Keyword.new([{ordered_by_direction, ordered_by_property}])
+            query |> order_by(^sort_values) |> limit(^limit)
+          [%Ecto.Query.QueryExpr{} = query_expr] ->
+            query |> limit(^limit)
+        end
       else
         query
       end
 
       query = if last do
-        sort_values = Keyword.new([{opposite_ordered_by_direction, ordered_by_property}])
-        query |> order_by(^sort_values) |> limit(^limit)
+        case query.order_bys do
+          [] ->
+            sort_values = Keyword.new([{opposite_ordered_by_direction, ordered_by_property}])
+            query |> order_by(^sort_values) |> limit(^limit)
+          [%Ecto.Query.QueryExpr{} = query_expr] ->
+            # TODO: Update order_by direction to opposite direction
+            query |> limit(^limit)
+        end
       else
         query
       end
