@@ -255,6 +255,25 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b, :order).cursor, ordered_by: :order}) == expected)
   end
 
+  test "pagination: respects last and before with non-default ordered_by property" do
+    expected = %{
+      edges: [
+        edge_for_object(b, :order),
+        edge_for_object(c, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(b, :order).cursor,
+        endCursor: edge_for_object(c, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    # TODO: Confirm that this works as expected
+    # What should the order be with last and before?
+    # What should the values for hasPreviousPage and hasNextPage be?
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 2, before: edge_for_object(d, :order).cursor, ordered_by: :order}) == expected)
+  end
+
   test "pagination: respects first and after with non-default ordered_by and ordered_by_direction" do
     expected = %{
       edges: [
@@ -269,6 +288,22 @@ defmodule GraphQL.Relay.Connection.EctoTest do
       }
     }
     assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(e, :order).cursor, ordered_by: :order, ordered_by_direction: :desc}) == expected)
+  end
+
+  test "pagination: respects last and before with non-default ordered_by and ordered_by_direction" do
+    expected = %{
+      edges: [
+        edge_for_object(d, :order),
+        edge_for_object(c, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(d, :order).cursor,
+        endCursor: edge_for_object(c, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{last: 2, before: edge_for_object(e, :order).cursor, ordered_by: :order, ordered_by_direction: :desc}) == expected)
   end
 
   test "pagination: respects first and after with order by introspection" do
@@ -289,6 +324,24 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(b, :order).cursor}) == expected)
   end
 
+  test "pagination: respects last and before with order by introspection" do
+    expected = %{
+      edges: [
+        edge_for_object(c, :order),
+        edge_for_object(d, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(c, :order).cursor,
+        endCursor: edge_for_object(d, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = letters_query
+    |> order_by(asc: :order)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(e, :order).cursor}) == expected)
+  end
+
   test "pagination: respects first and after with ordered and ordered direction introspection" do
     expected = %{
       edges: [
@@ -305,6 +358,24 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     query = letters_query
     |> order_by(desc: :order)
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(e, :order).cursor}) == expected)
+  end
+
+  test "pagination: respects last and before with ordered and ordered direction introspection" do
+    expected = %{
+      edges: [
+        edge_for_object(d, :order),
+        edge_for_object(c, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(d, :order).cursor,
+        endCursor: edge_for_object(c, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = letters_query
+    |> order_by(desc: :order)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(e, :order).cursor}) == expected)
   end
 
   test "pagination: respects first and after with order_by on joined field" do
@@ -326,6 +397,25 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(one, :number).cursor}) == expected)
   end
 
+  test "pagination: respects last and before with order_by on joined field" do
+    expected = %{
+      edges: [
+        edge_for_object(two, :number),
+        edge_for_object(three, :number),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(two, :number).cursor,
+        endCursor: edge_for_object(three, :number).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = Letter
+      |> join(:left, [l], n in Number, (l.id == n.letter_id))
+      |> order_by([l,n], n.number)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(one, :number).cursor}) == expected)
+  end
+
   test "pagination: respects first and after with order_by on joined field with explicit direction" do
     expected = %{
       edges: [
@@ -343,6 +433,25 @@ defmodule GraphQL.Relay.Connection.EctoTest do
       |> join(:left, [l], n in Number, (l.id == n.letter_id))
       |> order_by([l,n], desc: n.number)
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(four, :number).cursor}) == expected)
+  end
+
+  test "pagination: respects last and before with order_by on joined field with explicit direction" do
+    expected = %{
+      edges: [
+        edge_for_object(three, :number),
+        edge_for_object(two, :number),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(three, :number).cursor,
+        endCursor: edge_for_object(two, :number).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = Letter
+      |> join(:left, [l], n in Number, (l.id == n.letter_id))
+      |> order_by([l,n], desc: n.number)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(four, :number).cursor}) == expected)
   end
 
   test "pagination: respects first and after with multiple order_bys" do
@@ -363,6 +472,24 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(b, :order).cursor}) == expected)
   end
 
+  test "pagination: respects last and before with multiple order_bys" do
+    expected = %{
+      edges: [
+        edge_for_object(c, :order),
+        edge_for_object(d, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(c, :order).cursor,
+        endCursor: edge_for_object(d, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = letters_query
+    |> order_by([l], asc: l.order, desc: l.letter)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(b, :order).cursor}) == expected)
+  end
+
   test "pagination: respects first and after with multiple order_bys with explicit direction" do
     expected = %{
       edges: [
@@ -379,6 +506,24 @@ defmodule GraphQL.Relay.Connection.EctoTest do
     query = letters_query
     |> order_by([l], desc: l.order, asc: l.letter)
     assert(Connection.Ecto.resolve(Repo, query, %{first: 2, after: edge_for_object(e, :order).cursor}) == expected)
+  end
+
+  test "pagination: respects last and before with multiple order_bys with explicit direction" do
+    expected = %{
+      edges: [
+        edge_for_object(d, :order),
+        edge_for_object(c, :order),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(d, :order).cursor,
+        endCursor: edge_for_object(c, :order).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    query = letters_query
+    |> order_by([l], desc: l.order, asc: l.letter)
+    assert(Connection.Ecto.resolve(Repo, query, %{last: 2, before: edge_for_object(e, :order).cursor}) == expected)
   end
 
   test "respects first and after with long first" do
