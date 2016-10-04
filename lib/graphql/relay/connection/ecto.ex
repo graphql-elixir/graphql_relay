@@ -82,14 +82,44 @@ if Code.ensure_loaded?(Ecto) do
         GraphQL.Relay.Connection.Ecto.resolve(Repo, query, args)
       end
     """
+    defp expr({{:., _, [{:&, _, [idx]}, field]}, _, []}, sources, _query) when is_atom(field) do
+      {_, name, _} = elem(sources, idx)
+      "#{name}.#{quote_name(field)}"
+    end
     def resolve(repo, query, args \\ %{}) do
       before = cursor_to_offset(args[:before])
       # `after` is a keyword http://elixir-lang.org/docs/master/elixir/Kernel.SpecialForms.html#try/1
       a_after = cursor_to_offset(args[:after])
       first = args[:first]
       last = args[:last]
-      ordered_by_property = args[:ordered_by] || :id
-      ordered_by_direction = get_ordered_by_direction(args[:ordered_by_direction] || :asc)
+
+      # Deprecation messages
+      # Emit deprecation warning once we hit >= v0.7 per RELEASE.md#Deprecations
+      # case args do
+      #   %{ordered_by_direction: _} ->
+      #     :elixir_errors.warn __ENV__.line, __ENV__.file, "Use of :ordered_by_direction in args is deprecated as it's no longer needed! Use `Ecto.Query.order_by`."
+      #   %{ordered_by: _} ->
+      #     :elixir_errors.warn __ENV__.line, __ENV__.file, "Use of :ordered_by in args is deprecated as it's no longer needed! Use `Ecto.Query.order_by`."
+      # end
+      IO.inspect query.order_bys
+      ordered_by_direction = case query.order_bys do
+        [] -> get_ordered_by_direction(args[:ordered_by_direction] || :asc)
+        [%Ecto.Query.QueryExpr{} = query_expr] ->
+          case query_expr.expr do
+            [asc: _] -> :asc
+            [desc: _] -> :desc
+          end
+      end
+      IO.inspect ordered_by_direction
+      ordered_by_property = case query.order_bys do
+        [] ->
+          args[:ordered_by] || :id
+        [%Ecto.Query.QueryExpr{expr: [asc: {{:., _, [{:&, [], [idx]}, field]}, [], []}]}] ->
+          field
+        [%Ecto.Query.QueryExpr{expr: [desc: {{:., _, [{:&, [], [idx]}, field]}, [], []}]}] ->
+          field
+      end
+      IO.inspect ordered_by_property
       opposite_ordered_by_direction = if ordered_by_direction == :asc, do: :desc, else: :asc
       limit = Enum.min([first, last, connection_count(repo, query)])
 
