@@ -14,7 +14,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
       field :number, :integer
       field :letter_id, :integer
       # belongs_to :letter, Letter
-      timestamps
+      timestamps(usec: true)
     end
   end
 
@@ -26,7 +26,7 @@ defmodule GraphQL.Relay.Connection.EctoTest do
       field :second_column, :string
       field :order, :integer
       has_one :number, Number
-      timestamps
+      timestamps(usec: true)
     end
   end
 
@@ -92,9 +92,17 @@ defmodule GraphQL.Relay.Connection.EctoTest do
 
   defp edge_for_object(obj), do: edge_for_object(obj, :id)
   defp edge_for_object(obj, ordered_by) do
+    cursor_suffix = case Map.get(obj, ordered_by) do
+      %Ecto.DateTime{} = date_time -> Ecto.DateTime.to_iso8601(date_time)
+      %Date{} = date -> Date.to_iso8601(date)
+      %Time{} = time -> Time.to_iso8601(time)
+      %DateTime{} = date_time -> DateTime.to_iso8601(date_time)
+      %NaiveDateTime{} = date_time -> NaiveDateTime.to_iso8601(date_time)
+      prop -> to_string(prop)
+    end
     %{
       node: obj,
-      cursor: Base.encode64("ectoconnection:#{Map.get(obj, ordered_by)}")
+      cursor: Base.encode64("ectoconnection:#{cursor_suffix}")
     }
   end
 
@@ -249,6 +257,38 @@ defmodule GraphQL.Relay.Connection.EctoTest do
       }
     }
     assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(e, :order).cursor, ordered_by: :order, ordered_by_direction: :desc}) == expected)
+  end
+
+  test "pagination: respects first and after with datetime ordered_by property" do
+    expected = %{
+      edges: [
+        edge_for_object(c, :inserted_at),
+        edge_for_object(d, :inserted_at),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(c, :inserted_at).cursor,
+        endCursor: edge_for_object(d, :inserted_at).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(b, :inserted_at).cursor, ordered_by: :inserted_at}) == expected)
+  end
+
+  test "pagination: respects first and after with datetime ordered_by and ordered_by_direction" do
+    expected = %{
+      edges: [
+        edge_for_object(d, :inserted_at),
+        edge_for_object(c, :inserted_at),
+      ],
+      pageInfo: %{
+        startCursor: edge_for_object(d, :inserted_at).cursor,
+        endCursor: edge_for_object(c, :inserted_at).cursor,
+        hasPreviousPage: false,
+        hasNextPage: true,
+      }
+    }
+    assert(Connection.Ecto.resolve(Repo, letters_query, %{first: 2, after: edge_for_object(e, :inserted_at).cursor, ordered_by: :inserted_at, ordered_by_direction: :desc}) == expected)
   end
 
   test "respects first and after with long first" do
