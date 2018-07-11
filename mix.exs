@@ -1,7 +1,7 @@
 defmodule GraphQL.Relay.Mixfile do
   use Mix.Project
 
-  @version "0.5.0"
+  @version "0.5.1"
   @description "Relay helpers for GraphQL Elixir"
   @repo_url "https://github.com/graphql-elixir/graphql_relay"
 
@@ -29,7 +29,7 @@ defmodule GraphQL.Relay.Mixfile do
       ]
     ]
   end
-  
+
   defp applications(:test), do: applications(:prod) ++ [:ecto]
   defp applications(:dev), do: applications(:prod) ++ [:ecto]
   defp applications(_), do: [:logger]
@@ -37,7 +37,7 @@ defmodule GraphQL.Relay.Mixfile do
   defp deps do
     [
       {:graphql, "~> 0.3"},
-      {:poison, "~> 1.5 or ~> 2.0"}, # For .generate_schema_json!
+      {:poison, "~> 1.5 or ~> 2.0 or ~> 3.0"}, # For .generate_schema_json!
       {:ecto, "~> 1.0 or ~> 2.0", optional: true, only: [:dev, :test]},
       {:postgrex, ">= 0.0.0", only: [:dev, :test]},
     ]
